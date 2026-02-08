@@ -41,7 +41,8 @@ namespace rpkGUI.ViewModels
         [RelayCommand]
         private async Task SearchAsync()
         {
-            if (string.IsNullOrWhiteSpace(SearchQuery)) return;
+            if (string.IsNullOrWhiteSpace(SearchQuery))
+                return;
 
             IsBusy = true;
             SearchResults.Clear();
@@ -68,44 +69,50 @@ namespace rpkGUI.ViewModels
                 IsBusy = false;
             }
         }
-                [RelayCommand]
-                private async Task ListInstalledPackagesAsync(string packageManager)
+
+        [RelayCommand]
+        private async Task ListInstalledPackagesAsync(string packageManager)
+        {
+            if (packageManager != "apt")
+                return; // For now, only support apt. Will add more later.
+
+            IsBusy = true;
+            InstalledPackages.Clear();
+
+            try
+            {
+                var packages = await Task.Run(() => _aptService.ListPackages());
+
+                await Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    if (packageManager != "apt") return; // For now, only support apt. Will add more later.
-                    IsBusy = true;
-                    InstalledPackages.Clear();
-        
-                    try
+                    foreach (var pkg in packages)
                     {
-                        var packages = await Task.Run(() => _aptService.ListPackages());
-        
-                        await Dispatcher.UIThread.InvokeAsync(() =>
-                        {
-                            foreach (var pkg in packages)
-                            {
-                                InstalledPackages.Add(pkg);
-                            }
-                        });
+                        InstalledPackages.Add(pkg);
                     }
-                    finally
-                    {
-                        IsBusy = false;
-                    }
-                }
-        
-                [RelayCommand]
-                private async Task InstallPackageAsync(Package package)
-                {
-                    if (package == null) return;
-                    await _aptService.RunPackageActionAsync(package.Name, "install");
-                }
-        
-                [RelayCommand]
-                private async Task RemovePackageAsync(Package package)
-                {
-                    if (package == null) return;
-                    await _aptService.RunPackageActionAsync(package.Name, "remove");
-                }
+                });
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
-        
+
+        [RelayCommand]
+        private async Task InstallPackageAsync(Package package)
+        {
+            if (package == null)
+                return;
+
+            await _aptService.RunPackageActionAsync(package.Name, "install");
+        }
+
+        [RelayCommand]
+        private async Task RemovePackageAsync(Package package)
+        {
+            if (package == null)
+                return;
+
+            await _aptService.RunPackageActionAsync(package.Name, "remove");
+        }
+    }
+}
