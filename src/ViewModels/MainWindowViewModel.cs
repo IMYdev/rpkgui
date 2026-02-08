@@ -19,7 +19,16 @@ namespace rpkGUI.ViewModels
         private bool _isBusy;
 
         [ObservableProperty]
-        private bool _isSearchResultsVisible = true;
+        private bool _isAptEnabled = true;
+
+        [ObservableProperty]
+        private bool _isFlatpakEnabled = false;
+
+        [ObservableProperty]
+        private bool _isSnapEnabled = false;
+
+        [ObservableProperty]
+        private bool _isPacstallEnabled = false;
 
         public ObservableCollection<Package> SearchResults { get; } = new();
         public ObservableCollection<Package> InstalledPackages { get; } = new();
@@ -35,49 +44,67 @@ namespace rpkGUI.ViewModels
             if (string.IsNullOrWhiteSpace(SearchQuery)) return;
 
             IsBusy = true;
-            IsSearchResultsVisible = true;
             SearchResults.Clear();
 
             try
             {
-                var packages = await Task.Run(() => _aptService.SearchPackagesAsync(SearchQuery));
-
-                await Dispatcher.UIThread.InvokeAsync(() =>
+                if (IsAptEnabled)
                 {
-                    foreach (var pkg in packages)
+                    var packages = await Task.Run(() => _aptService.SearchPackagesAsync(SearchQuery));
+
+                    await Dispatcher.UIThread.InvokeAsync(() =>
                     {
-                        SearchResults.Add(pkg);
-                    }
-                });
+                        foreach (var pkg in packages)
+                        {
+                            SearchResults.Add(pkg);
+                        }
+                    });
+                }
+
+                // Will add support for more package managers as we go.
             }
             finally
             {
                 IsBusy = false;
             }
         }
-        [RelayCommand]
-        private async Task ListInstalledPackagesAsync()
-        {
-            IsBusy = true;
-            IsSearchResultsVisible = false;
-            InstalledPackages.Clear();
-
-            try
-            {
-                var packages = await Task.Run(() => _aptService.ListPackages());
-
-                await Dispatcher.UIThread.InvokeAsync(() =>
+                [RelayCommand]
+                private async Task ListInstalledPackagesAsync()
                 {
-                    foreach (var pkg in packages)
+                    IsBusy = true;
+                    InstalledPackages.Clear();
+        
+                    try
                     {
-                        InstalledPackages.Add(pkg);
+                        var packages = await Task.Run(() => _aptService.ListPackages());
+        
+                        await Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            foreach (var pkg in packages)
+                            {
+                                InstalledPackages.Add(pkg);
+                            }
+                        });
                     }
-                });
-            }
-            finally
-            {
-                IsBusy = false;
+                    finally
+                    {
+                        IsBusy = false;
+                    }
+                }
+        
+                [RelayCommand]
+                private async Task InstallPackageAsync(Package package)
+                {
+                    if (package == null) return;
+                    await _aptService.RunPackageActionAsync(package.Name, "install");
+                }
+        
+                [RelayCommand]
+                private async Task RemovePackageAsync(Package package)
+                {
+                    if (package == null) return;
+                    await _aptService.RunPackageActionAsync(package.Name, "remove");
+                }
             }
         }
-    }
-}
+        

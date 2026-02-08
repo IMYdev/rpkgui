@@ -12,44 +12,87 @@
     <Design.DataContext>
         <vm:MainWindowViewModel/>
     </Design.DataContext>
-    <Grid RowDefinitions="Auto, *">
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="10">
-            <TextBox Text="{Binding SearchQuery}" 
-                     Watermark="Search for package..." 
-                     Width="300"/>
-            
-            <Button Content="Search" 
-                    Command="{Binding SearchCommand}" 
-                    IsEnabled="{Binding !IsBusy}"/>
-            
-            <Button Content="List Installed Packages" 
-                    Command="{Binding ListInstalledPackagesCommand}" 
-                    IsEnabled="{Binding !IsBusy}"/>
-            
-            <TextBlock Text="Loading..." 
-                       IsVisible="{Binding IsBusy}" 
-                       VerticalAlignment="Center"/>
-        </StackPanel>
+    <TabControl>
+        <TabItem Header="Find Packages">
+            <Grid RowDefinitions="Auto, *">
+                <StackPanel Grid.Row="0" Margin="10" Spacing="10">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBox Text="{Binding SearchQuery}" 
+                                 Watermark="Search for package..." 
+                                 Width="300"/>
+                        <Button Content="Search" 
+                                Command="{Binding SearchCommand}" 
+                                IsEnabled="{Binding !IsBusy}"/>
+                        <TextBlock Text="Searching..." 
+                                   IsVisible="{Binding IsBusy}" 
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                    
+                    <StackPanel Orientation="Horizontal" Spacing="20">
+                        <CheckBox Content="APT" IsChecked="{Binding IsAptEnabled}"/>
+                        <CheckBox Content="Flatpak" IsChecked="{Binding IsFlatpakEnabled}"/>
+                        <CheckBox Content="Snap" IsChecked="{Binding IsSnapEnabled}"/>
+                        <CheckBox Content="Pacstall" IsChecked="{Binding IsPacstallEnabled}"/>
+                    </StackPanel>
+                </StackPanel>
 
-        <ListBox Grid.Row="1" IsVisible="{Binding !IsSearchResultsVisible}" ItemsSource="{Binding InstalledPackages}" Margin="10">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Spacing="2">
-                        <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-        <ListBox Grid.Row="1" IsVisible="{Binding IsSearchResultsVisible}" ItemsSource="{Binding SearchResults}" Margin="10">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Spacing="2">
-                        <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding Description}" FontSize="12" Foreground="Gray"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-    </Grid>
+                <ListBox Grid.Row="1" ItemsSource="{Binding SearchResults}" Margin="10">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <DockPanel LastChildFill="False">
+                                <StackPanel Spacing="2" DockPanel.Dock="Left">
+                                    <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding Description}" FontSize="12" Foreground="Gray"/>
+                                </StackPanel>
+                                <Button Content="Install" 
+                                        Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).InstallPackageCommand}" 
+                                        CommandParameter="{Binding}"
+                                        DockPanel.Dock="Right"
+                                        VerticalAlignment="Center"/>
+                            </DockPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </TabItem>
+
+        <TabItem Header="APT">
+            <Grid RowDefinitions="Auto, *">
+                <Button Grid.Row="0" 
+                        Content="List Installed Packages" 
+                        Command="{Binding ListInstalledPackagesCommand}" 
+                        IsEnabled="{Binding !IsBusy}"
+                        Margin="10"/>
+                
+                <ListBox Grid.Row="1" ItemsSource="{Binding InstalledPackages}" Margin="10">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <DockPanel LastChildFill="False">
+                                <TextBlock Text="{Binding Name}" FontWeight="Bold" DockPanel.Dock="Left" VerticalAlignment="Center"/>
+                                <StackPanel Orientation="Horizontal" Spacing="5" DockPanel.Dock="Right">
+                                    <Button Content="Uninstall" 
+                                            Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RemovePackageCommand}" 
+                                            CommandParameter="{Binding}"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </TabItem>
+
+        <TabItem Header="Pacstall">
+            <TextBlock Text="Pacstall support coming soon..." Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </TabItem>
+
+        <!-- Placeholder Tabs -->
+        <TabItem Header="Flatpak">
+            <TextBlock Text="Flatpak support coming soon..." Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </TabItem>
+
+        <TabItem Header="Snap">
+            <TextBlock Text="Snap support coming soon..." Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </TabItem>
+    </TabControl>
 
 </Window>

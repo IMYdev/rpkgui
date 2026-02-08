@@ -62,8 +62,150 @@ namespace rpkGUI.Services
                 results.Add(new Package { Name = line.Trim() });
             }
 
-            await process.WaitForExitAsync();
-            return results;
-        }
-    }
-}
+                        await process.WaitForExitAsync();
+
+                        return results;
+
+                    }
+
+                    public async Task RunPackageActionAsync(string name, string action)
+
+                    {
+
+                        string aptCommand = action == "install" ? "install" : "remove";
+
+                        string command = $"sudo apt-get {aptCommand} '{name}'; echo; echo 'Process finished. Press Enter to close...'; read";
+
+                        string terminal = "";
+
+                        string terminalArgs = "";
+
+                        if (System.IO.File.Exists("/usr/bin/x-terminal-emulator"))
+
+                        {
+
+                            terminal = "/usr/bin/x-terminal-emulator";
+
+                            terminalArgs = $"-e bash -c \"{command}\"";
+
+                        }
+
+                        else if (System.IO.File.Exists("/usr/bin/konsole"))
+
+                        {
+
+                            terminal = "/usr/bin/konsole";
+
+                            terminalArgs = $"-e bash -c \"{command}\"";
+
+                        }
+
+                        else if (System.IO.File.Exists("/usr/bin/gnome-terminal"))
+
+                        {
+
+                            terminal = "/usr/bin/gnome-terminal";
+
+                            terminalArgs = $"-- bash -c \"{command}\"";
+
+                        }
+
+                        else if (System.IO.File.Exists("/usr/bin/xfce4-terminal"))
+
+                        {
+
+                            terminal = "/usr/bin/xfce4-terminal";
+
+                            terminalArgs = $"-e \"bash -c '{command}'\"";
+
+                        }
+
+                        else if (System.IO.File.Exists("/usr/bin/xterm"))
+
+                        {
+
+                            terminal = "/usr/bin/xterm";
+
+                            terminalArgs = $"-e \"bash -c '{command}'\"";
+
+                        }
+
+                        else if (System.IO.File.Exists("/usr/bin/alacritty"))
+
+                        {
+
+                            terminal = "/usr/bin/alacritty";
+
+                            terminalArgs = $"-e bash -c \"{command}\"";
+
+                        }
+
+                        else if (System.IO.File.Exists("/usr/bin/kitty"))
+
+                        {
+
+                            terminal = "/usr/bin/kitty";
+
+                            terminalArgs = $"-e bash -c \"{command}\"";
+
+                        }
+
+                        else
+
+                        {
+
+                            terminal = "/usr/bin/bash";
+
+                            terminalArgs = $"-c \"{command}\"";
+
+                        }
+
+            
+
+                        var startInfo = new ProcessStartInfo
+
+                        {
+
+                            FileName = terminal,
+
+                            Arguments = terminalArgs,
+
+                            UseShellExecute = false,
+
+                            CreateNoWindow = false
+
+                        };
+
+            
+
+                        try
+
+                        {
+
+                            using var process = Process.Start(startInfo);
+
+                            if (process != null)
+
+                            {
+
+                                await process.WaitForExitAsync();
+
+                            }
+
+                        }
+
+                        catch (Exception ex)
+
+                        {
+
+                            Console.WriteLine($"Error launching terminal: {ex.Message}");
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+            
