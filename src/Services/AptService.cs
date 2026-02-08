@@ -18,7 +18,7 @@ namespace rpkGUI.Services
             var processStartInfo = new ProcessStartInfo
             {
                 FileName = "/bin/bash",
-                Arguments = $"-c \"apt-cache search {query}\"", 
+                Arguments = $"-c \"apt-cache search {query} | grep -i {query} | sort\"", 
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
