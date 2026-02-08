@@ -69,8 +69,9 @@ namespace rpkGUI.ViewModels
             }
         }
                 [RelayCommand]
-                private async Task ListInstalledPackagesAsync()
+                private async Task ListInstalledPackagesAsync(string packageManager)
                 {
+                    if (packageManager != "apt") return; // For now, only support apt. Will add more later.
                     IsBusy = true;
                     InstalledPackages.Clear();
         
