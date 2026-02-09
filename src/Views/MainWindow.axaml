@@ -27,9 +27,11 @@
         <SolidColorBrush x:Key="ListItemSelectedBrush"
                          Color="#55372ba6" />
         <SolidColorBrush x:Key="AccentBrush"
-                         Color="#372b50" />
+                         Color="#8b00e7" />
         <SolidColorBrush x:Key="AccentForegroundBrush"
-                         Color="#d28dff" />
+                         Color="#d404ff" />
+        <SolidColorBrush x:Key="AccentBrushMuted"
+                         Color="#721daa" />
         <SolidColorBrush x:Key="MutedTextBrush"
                          Color="#BDBDBD" />
     </Window.Resources>
@@ -73,15 +75,16 @@
             <Setter Property="CornerRadius"
                     Value="20" />
             <Setter Property="Padding"
-                    Value="16,6" />
+                    Value="30,10" />
             <Setter Property="FontWeight"
                     Value="Medium" />
-        </Style>
-        <Style Selector="Button.suggested-action">
             <Setter Property="Background"
                     Value="{StaticResource AccentBrush}" />
             <Setter Property="Foreground"
-                    Value="{StaticResource AccentForegroundBrush}" />
+                    Value="White" />
+        </Style>
+        <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource AccentBrushMuted}" />
         </Style>
         <Style Selector="TabControl">
             <Setter Property="Margin"
@@ -109,6 +112,29 @@
             <Setter Property="VerticalContentAlignment"
                     Value="Center" />
         </Style>
+        <Style Selector="TabItem:selected /template/ Border#PART_SelectedPipe">
+            <Setter Property="Background"
+                    Value="{StaticResource AccentForegroundBrush}" />
+        </Style>
+        <Style Selector="CheckBox:checked /template/ Border#NormalRectangle">
+            <Setter Property="Background"
+                    Value="{StaticResource AccentBrush}" />
+            <Setter Property="BorderBrush"
+                    Value="{StaticResource AccentBrush}" />
+        </Style>
+        <Style Selector="CheckBox:checked:pointerover /template/ Border#NormalRectangle">
+            <Setter Property="Background"
+                    Value="{StaticResource AccentBrushMuted}" />
+            <Setter Property="BorderBrush"
+                    Value="{StaticResource AccentBrushMuted}" />
+        </Style>
+        <Style Selector="ProgressBar">
+            <Setter Property="Foreground"
+                    Value="{StaticResource AccentBrush}" />
+        </Style>
+        <Style Selector="TextBox.SearchBox:focus /template/ Border#PART_BorderElement">
+        <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+        </Style>
     </Window.Styles>
     <Grid Grid.Row="1"
           Margin="40,20">
@@ -122,12 +148,12 @@
                               ColumnSpacing="12">
                             <TextBox Text="{Binding SearchQuery}"
                                      Watermark="Search for package..."
+                                     Classes="SearchBox"
                                      CornerRadius="20"
                                      Height="36"
                                      VerticalContentAlignment="Center" />
                             <Button Grid.Column="1"
                                     Content="Search"
-                                    Classes="suggested-action"
                                     Command="{Binding SearchCommand}"
                                     IsEnabled="{Binding !IsBusy}" />
                         </Grid>
@@ -165,7 +191,6 @@
                                                    TextWrapping="Wrap" />
                                     </StackPanel>
                                     <Button Content="Install"
-                                            Classes="suggested-action"
                                             Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).InstallPackageCommand}"
                                             CommandParameter="{Binding}"
                                             DockPanel.Dock="Right"
@@ -214,7 +239,6 @@
                                                 Spacing="5"
                                                 DockPanel.Dock="Right">
                                         <Button Content="Uninstall"
-                                                Classes="suggested-action"
                                                 Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RemovePackageCommand}"
                                                 CommandParameter="{Binding}" />
                                     </StackPanel>
