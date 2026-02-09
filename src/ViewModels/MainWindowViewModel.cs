@@ -71,16 +71,15 @@ namespace rpkGUI.ViewModels
         }
 
         [RelayCommand]
-        private async Task ListInstalledPackagesAsync(string packageManager)
+        private async Task ListInstalledPackagesAsync()
         {
-            if (packageManager != "apt")
-                return; // For now, only support apt. Will add more later.
-
             IsBusy = true;
             InstalledPackages.Clear();
 
             try
             {
+                if (IsAptEnabled)
+                {
                 var packages = await Task.Run(() => _aptService.ListPackages());
 
                 await Dispatcher.UIThread.InvokeAsync(() =>
@@ -90,6 +89,8 @@ namespace rpkGUI.ViewModels
                         InstalledPackages.Add(pkg);
                     }
                 });
+                }
+                // Will add support for more package managers as we go.
             }
             finally
             {

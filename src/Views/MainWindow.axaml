@@ -185,7 +185,6 @@
                                 Spacing="16">
                         <Button Content="Refresh List"
                                 Command="{Binding ListInstalledPackagesCommand}"
-                                CommandParameter="apt"
                                 IsEnabled="{Binding !IsBusy}"
                                 HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Center" />
