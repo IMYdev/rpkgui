@@ -18,8 +18,6 @@
     <Window.Resources>
         <SolidColorBrush x:Key="WindowBackground"
                          Color="#241f31" />
-        <SolidColorBrush x:Key="HeaderBackground"
-                         Color="#353141" />
         <SolidColorBrush x:Key="ListBackground"
                          Color="#353141" />
         <SolidColorBrush x:Key="ListItemBorderBrush"
