@@ -14,7 +14,7 @@
         ExtendClientAreaToDecorationsHint="True"
         ExtendClientAreaTitleBarHeightHint="-1"
         Background="{StaticResource WindowBackground}"
-        FontFamily="Inter">
+        FontFamily="Ubuntu">
     <Window.Resources>
         <SolidColorBrush x:Key="WindowBackground"
                          Color="#241f31" />
@@ -86,6 +86,14 @@
         <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="{StaticResource AccentBrushMuted}" />
         </Style>
+        <Style Selector="Button.iconBtn">
+            <Setter Property="Background"
+                    Value="{StaticResource ListBackground}" />
+            <Setter Property="BorderThickness"
+                    Value="0" />
+            <Setter Property="Padding"
+                    Value="12" />
+        </Style>
         <Style Selector="TabControl">
             <Setter Property="Margin"
                     Value="0" />
@@ -128,12 +136,29 @@
             <Setter Property="BorderBrush"
                     Value="{StaticResource AccentBrushMuted}" />
         </Style>
+        <Style Selector="CheckBox:unchecked /template/ Border#NormalRectangle">
+            <Setter Property="Background"
+                    Value="{StaticResource ListBackground}" />
+            <Setter Property="BorderBrush"
+                    Value="Transparent" />
+        </Style>
         <Style Selector="ProgressBar">
             <Setter Property="Foreground"
                     Value="{StaticResource AccentBrush}" />
         </Style>
+        <Style Selector="TextBox.SearchBox /template/ Border#PART_BorderElement">
+        <Setter Property="BorderBrush" Value="{StaticResource ListBackground}" />
+        </Style>
         <Style Selector="TextBox.SearchBox:focus /template/ Border#PART_BorderElement">
         <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+        </Style>
+        <Style Selector="PathIcon">
+            <Setter Property="Width"
+                    Value="15" />
+            <Setter Property="Height"
+                    Value="15" />
+            <Setter Property="Foreground"
+                    Value="White" />
         </Style>
     </Window.Styles>
     <Grid Grid.Row="1"
@@ -203,14 +228,8 @@
             </TabItem>
             <TabItem Header="Installed Packages">
                 <Grid RowDefinitions="Auto, *">
-                    <StackPanel Grid.Row="0"
-                                Margin="0,0,0,24"
-                                Spacing="16">
-                        <Button Content="Refresh List"
-                                Command="{Binding ListInstalledPackagesCommand}"
-                                IsEnabled="{Binding !IsBusy}"
-                                HorizontalAlignment="Stretch"
-                                HorizontalContentAlignment="Center" />
+                    <Grid Grid.Row="0"
+                          Margin="0,0,0,24">
                         <StackPanel Orientation="Horizontal"
                                     Spacing="24"
                                     HorizontalAlignment="Center">
@@ -223,7 +242,14 @@
                             <CheckBox Content="Pacstall"
                                       IsChecked="{Binding IsPacstallEnabled}" />
                         </StackPanel>
-                    </StackPanel>
+                        <Button HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Command="{Binding ListInstalledPackagesCommand}"
+                                IsEnabled="{Binding !IsBusy}"
+                                Classes="iconBtn">
+                                <PathIcon Data="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
+                        </Button>
+                    </Grid>
                     <ListBox Grid.Row="1"
                              ItemsSource="{Binding InstalledPackages}"
                              Classes="boxed">
